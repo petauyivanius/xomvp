@@ -1,7 +1,9 @@
 <resources>
-    <string name="app_name">XO mvp</string>
+    <string name="app_name">XOmvp</string>
     <string name="instruction_reset_game">Click button to reset game</string>
     <string name="zero_won">ZERO won</string>
     <string name="cross_won">CROSS won</string>
     <string name="draw">Draw</string>
+    <string name="facebook_app_id">2510433312543119</string>
+    <string name="fb_login_protocol_scheme">fb2510433312543119</string>
 </resources>

