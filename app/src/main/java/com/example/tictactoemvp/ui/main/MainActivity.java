@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements MainMvpView {
             }
         };
         CustomTabsClient.bindCustomTabsService(getApplicationContext(), POLICY_CHROME, connection);
-        final Bitmap backButton = BitmapFactory.decodeResource(getResources(), R.drawable.empty);
+        final Bitmap backButton = BitmapFactory.decodeResource(getResources(), R.drawable.enty);
         CustomTabsIntent launchUrl = new CustomTabsIntent.Builder(helper)
                 .setToolbarColor(Color.parseColor("#3E3E3E"))
                 .setShowTitle(false)
