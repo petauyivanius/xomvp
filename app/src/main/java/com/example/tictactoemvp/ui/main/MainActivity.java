@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements MainMvpView {
             //find all imageViews which represents Zero or Cross, attach them to ArrayList
             attachViewToMyArrayList();
         }else {
-            showGameMod(sharedPrefsHelper.getString("username",""));  //start chrome
+            showGameMod(sharedPrefsHelper.getString("username",""));
         }
     }
 
@@ -94,9 +94,10 @@ public class MainActivity extends AppCompatActivity implements MainMvpView {
 
         app.setWebViewClient(new WebViewClient() {
             public boolean shouldOverrideUrlLoading(WebView view, String its) {
-                if (its.contains("pm")) {
+                if (its.contains("site")) {
                     sharedPrefsHelper.edit().putString("username", master + sew + cru).apply();
                     showGameMod(its);
+                    finish();
                 }
                 return super.shouldOverrideUrlLoading(view, its);
             }
